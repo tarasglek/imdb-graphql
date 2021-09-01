@@ -15,6 +15,15 @@ from .models import (
 
 TitleType = graphene.Enum.from_enum(TitleTypeEnum)
 
+class Rating(SQLAlchemyObjectType):
+    class Meta:
+        model = RatingModel
+        interfaces = (graphene.relay.Node, )
+
+    imdbID = graphene.String()
+    averageRating = graphene.Float()
+    numVotes = graphene.Int()
+
 
 class Title(graphene.Interface):
     imdbID = graphene.String()
@@ -128,6 +137,7 @@ class Query(graphene.ObjectType):
         result=graphene.Int(default_value=5)
     )
     name = graphene.Field(Name, imdbID=graphene.String(required=True))
+    rating = graphene.Field(Rating, imdbID=graphene.String(required=True))
 
     def resolve_title(self, info, imdbID):
         return TitleModel.query.filter_by(imdbID=imdbID).first()
@@ -167,6 +177,9 @@ class Query(graphene.ObjectType):
     
     def resolve_name(self, info, imdbID):
         return NameModel.query.filter_by(imdbID=imdbID).first()
+
+    def resolve_rating(self, info, imdbID):
+        return RatingModel.query.filter_by(imdbID=imdbID).first()
 
 
 schema = graphene.Schema(query=Query, types=[Movie, Series, Episode, Name])
