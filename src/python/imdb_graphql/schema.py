@@ -138,6 +138,11 @@ class Query(graphene.ObjectType):
     )
     name = graphene.Field(Name, imdbID=graphene.String(required=True))
     rating = graphene.Field(Rating, imdbID=graphene.String(required=True))
+    nameSearch = graphene.Field(
+        graphene.List(Name),
+        name=graphene.String(required=True),
+        result=graphene.Int(default_value=10)
+    )
 
     def resolve_title(self, info, imdbID):
         return TitleModel.query.filter_by(imdbID=imdbID).first()
@@ -180,6 +185,19 @@ class Query(graphene.ObjectType):
 
     def resolve_rating(self, info, imdbID):
         return RatingModel.query.filter_by(imdbID=imdbID).first()
+
+    def resolve_nameSearch(self, info, name, result=None):
+        query = (
+            NameModel
+            .query
+            .filter(NameModel.primaryName.ilike(f'%{name}%'))
+            .order_by(
+                NameModel.primaryName,
+                NameModel.birthYear
+            )
+            .limit(result)
+        )
+        return query
 
 
 schema = graphene.Schema(query=Query, types=[Movie, Series, Episode, Name])
