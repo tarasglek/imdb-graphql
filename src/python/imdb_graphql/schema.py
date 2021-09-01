@@ -130,7 +130,7 @@ class Query(graphene.ObjectType):
     movie = graphene.Field(Movie, imdbID=graphene.String(required=True))
     series = graphene.Field(Series, imdbID=graphene.String(required=True))
     episode = graphene.Field(Episode, imdbID=graphene.String(required=True))
-    search = graphene.Field(
+    titleSearch = graphene.Field(
         graphene.List(Title),
         title=graphene.String(required=True),
         types=graphene.List(TitleType),
@@ -151,7 +151,7 @@ class Query(graphene.ObjectType):
     def resolve_episode(self, info, imdbID):
         return Episode.get_query(info).filter_by(imdbID=imdbID).first()
 
-    def resolve_search(self, info, title, types=None, result=None):
+    def resolve_titleSearch(self, info, title, types=None, result=None):
         tsquery = func.to_tsquery(f'\'{title}\'')
         query = (
             TitleModel

@@ -38,7 +38,7 @@ Go to http://127.0.0.1:5000/imdb enter
 Use search
 ```
 { 
-  search(title: "Show") {
+  titleSearch(title: "Show") {
     imdbID
     titleType
     primaryTitle
