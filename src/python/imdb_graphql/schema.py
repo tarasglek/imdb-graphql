@@ -103,8 +103,17 @@ class Name(SQLAlchemyObjectType):
     birthYear = graphene.Int()
     deathYear = graphene.Int()
     primaryName = graphene.String()
-    knownForTitles = graphene.String()
     primaryProfession = graphene.String()
+    knownForTitles = graphene.List(Title)
+
+    def resolve_knownForTitles(self, info):
+        query = (
+            TitleModel
+            .query
+            .filter(TitleModel.imdbID.in_(self.knownForTitles.split(',')))
+        ) if self.knownForTitles is not None else None
+
+        return query
 
 
 class Query(graphene.ObjectType):

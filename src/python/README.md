@@ -56,15 +56,26 @@ Use search
 
 name query
 ```
-{ 
+{
   name(imdbID: "98") {
     imdbID,
     primaryName,
-    knownForTitles,
+    primaryProfession,
     birthYear,
     deathYear,
-    primaryProfession,
-    knownForTitles
+    knownForTitles {
+      imdbID,
+      titleType,
+      primaryTitle,
+      originalTitle,
+      isAdult,
+      startYear,
+      endYear,
+      runtime,
+      genres,
+      averageRating,
+      numVotes,
+    }
   }
 }
 ```
