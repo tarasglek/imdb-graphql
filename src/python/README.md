@@ -122,3 +122,40 @@ Example of nested query
   } 
 }
 ```
+
+nameSearch query
+```
+{
+  nameSearch(name: "Jen", result:20) {
+    imdbID,
+    primaryName,
+    primaryProfession,
+    birthYear,
+    deathYear,
+    knownForTitles {
+      imdbID,
+      titleType,
+      primaryTitle,
+      originalTitle,
+      isAdult,
+      startYear,
+      endYear,
+      runtime,
+      genres,
+      averageRating,
+      numVotes,
+    }
+  }
+}
+```
+
+rating query
+```
+{
+  rating(imdbID: "198078") {
+    imdbID,
+    averageRating,
+    numVotes
+  }
+}
+```
