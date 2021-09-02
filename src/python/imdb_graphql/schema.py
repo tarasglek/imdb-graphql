@@ -1,5 +1,6 @@
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from opentracing_utils import trace_sqlalchemy
 from sqlalchemy import func, desc
 
 from .models import (
@@ -201,3 +202,4 @@ class Query(graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query, types=[Movie, Series, Episode, Name])
+trace_sqlalchemy(use_scope_manager=True)
