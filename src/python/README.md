@@ -7,6 +7,13 @@ pip install poetry
 poetry install
 ```
 
+Install dependencies for opentracing and jaeger:
+
+```
+pip install -U opentracing-utils
+pip install jaeger-client
+```
+
 Set db url (in alchemy format https://docs.sqlalchemy.org/en/14/core/engines.html#postgresql) via env var:
 
 `export ALCHEMY_URL=postgresql://taras@localhost/taras`
