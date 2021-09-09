@@ -1,8 +1,6 @@
 import graphene
 from graphene_sqlalchemy import SQLAlchemyObjectType
-from opentracing_utils import trace_sqlalchemy
 from sqlalchemy import func, desc
-from opentracing_utils import trace_sqlalchemy
 
 from .models import (
     Title as TitleModel,
@@ -16,8 +14,6 @@ from .models import (
 )
 
 TitleType = graphene.Enum.from_enum(TitleTypeEnum)
-
-trace_sqlalchemy(use_scope_manager=True)
 
 class Rating(SQLAlchemyObjectType):
     class Meta:
@@ -204,4 +200,4 @@ class Query(graphene.ObjectType):
         return query
 
 
-schema = graphene.Schema(query=Query, types=[Movie, Series, Episode, Name])
+schema = graphene.Schema(query=Query, types=[Movie, Series, Episode])

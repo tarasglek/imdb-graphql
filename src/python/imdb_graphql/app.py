@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_graphql import GraphQLView
-from opentracing_utils import OPENTRACING_JAEGER, init_opentracing_tracer
+from .tracing import start_tracing
 
 
 from .database import init_db, session
@@ -16,7 +16,7 @@ default_query = '''
 }
 '''.strip()
 
-init_opentracing_tracer(OPENTRACING_JAEGER, service_name='imdb-server')
+start_tracing()
 
 app.add_url_rule(
     '/imdb',
