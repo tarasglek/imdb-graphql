@@ -15,6 +15,15 @@ from .models import (
 
 TitleType = graphene.Enum.from_enum(TitleTypeEnum)
 
+class Rating(SQLAlchemyObjectType):
+    class Meta:
+        model = RatingModel
+        interfaces = (graphene.relay.Node, )
+
+    imdbID = graphene.String()
+    averageRating = graphene.Float()
+    numVotes = graphene.Int()
+
 
 class Title(graphene.Interface):
     imdbID = graphene.String()
@@ -103,8 +112,17 @@ class Name(SQLAlchemyObjectType):
     birthYear = graphene.Int()
     deathYear = graphene.Int()
     primaryName = graphene.String()
-    knownForTitles = graphene.String()
     primaryProfession = graphene.String()
+    knownForTitles = graphene.List(Title)
+
+    def resolve_knownForTitles(self, info):
+        query = (
+            TitleModel
+            .query
+            .filter(TitleModel.imdbID.in_(self.knownForTitles.split(',')))
+        ) if self.knownForTitles is not None else None
+
+        return query
 
 
 class Query(graphene.ObjectType):
@@ -112,13 +130,19 @@ class Query(graphene.ObjectType):
     movie = graphene.Field(Movie, imdbID=graphene.String(required=True))
     series = graphene.Field(Series, imdbID=graphene.String(required=True))
     episode = graphene.Field(Episode, imdbID=graphene.String(required=True))
-    search = graphene.Field(
+    titleSearch = graphene.Field(
         graphene.List(Title),
         title=graphene.String(required=True),
         types=graphene.List(TitleType),
         result=graphene.Int(default_value=5)
     )
     name = graphene.Field(Name, imdbID=graphene.String(required=True))
+    rating = graphene.Field(Rating, imdbID=graphene.String(required=True))
+    nameSearch = graphene.Field(
+        graphene.List(Name),
+        name=graphene.String(required=True),
+        result=graphene.Int(default_value=10)
+    )
 
     def resolve_title(self, info, imdbID):
         return TitleModel.query.filter_by(imdbID=imdbID).first()
@@ -132,7 +156,7 @@ class Query(graphene.ObjectType):
     def resolve_episode(self, info, imdbID):
         return Episode.get_query(info).filter_by(imdbID=imdbID).first()
 
-    def resolve_search(self, info, title, types=None, result=None):
+    def resolve_titleSearch(self, info, title, types=None, result=None):
         tsquery = func.to_tsquery(f'\'{title}\'')
         query = (
             TitleModel
@@ -158,6 +182,22 @@ class Query(graphene.ObjectType):
     
     def resolve_name(self, info, imdbID):
         return NameModel.query.filter_by(imdbID=imdbID).first()
+
+    def resolve_rating(self, info, imdbID):
+        return RatingModel.query.filter_by(imdbID=imdbID).first()
+
+    def resolve_nameSearch(self, info, name, result=None):
+        query = (
+            NameModel
+            .query
+            .filter(NameModel.primaryName.ilike(f'%{name}%'))
+            .order_by(
+                NameModel.primaryName,
+                NameModel.birthYear
+            )
+            .limit(result)
+        )
+        return query
 
 
 schema = graphene.Schema(query=Query, types=[Movie, Series, Episode, Name])

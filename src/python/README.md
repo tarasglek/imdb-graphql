@@ -38,7 +38,7 @@ Go to http://127.0.0.1:5000/imdb enter
 Use search
 ```
 { 
-  search(title: "Show") {
+  titleSearch(title: "Show") {
     imdbID
     titleType
     primaryTitle
@@ -56,15 +56,26 @@ Use search
 
 name query
 ```
-{ 
+{
   name(imdbID: "98") {
     imdbID,
     primaryName,
-    knownForTitles,
+    primaryProfession,
     birthYear,
     deathYear,
-    primaryProfession,
-    knownForTitles
+    knownForTitles {
+      imdbID,
+      titleType,
+      primaryTitle,
+      originalTitle,
+      isAdult,
+      startYear,
+      endYear,
+      runtime,
+      genres,
+      averageRating,
+      numVotes,
+    }
   }
 }
 ```
@@ -109,5 +120,42 @@ Example of nested query
       } 
     }
   } 
+}
+```
+
+nameSearch query
+```
+{
+  nameSearch(name: "Jen", result:20) {
+    imdbID,
+    primaryName,
+    primaryProfession,
+    birthYear,
+    deathYear,
+    knownForTitles {
+      imdbID,
+      titleType,
+      primaryTitle,
+      originalTitle,
+      isAdult,
+      startYear,
+      endYear,
+      runtime,
+      genres,
+      averageRating,
+      numVotes,
+    }
+  }
+}
+```
+
+rating query
+```
+{
+  rating(imdbID: "198078") {
+    imdbID,
+    averageRating,
+    numVotes
+  }
 }
 ```
